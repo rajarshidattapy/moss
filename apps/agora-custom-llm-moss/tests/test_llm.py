@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 SRC = Path(__file__).resolve().parents[1] / "server" / "src"
 sys.path.insert(0, str(SRC))
 
-import llm  # noqa: E402
+import llm
 
 PAYLOAD = {
     "model": "mock",
