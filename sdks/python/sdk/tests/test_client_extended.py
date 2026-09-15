@@ -57,7 +57,7 @@ class TestCloudFallbackErrors:
             )
             mock_httpx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            with pytest.raises(Exception, match="HTTP error! status: 500"):
+            with pytest.raises(RuntimeError, match="HTTP error! status: 500"):
                 await unloaded_client.query("idx", "test query")
 
     @pytest.mark.asyncio
@@ -72,8 +72,12 @@ class TestCloudFallbackErrors:
             )
             mock_httpx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            with pytest.raises(Exception, match="Cloud query request failed"):
+            with pytest.raises(
+                RuntimeError, match="Cloud query request failed"
+            ) as exc_info:
                 await unloaded_client.query("idx", "test query")
+
+            assert isinstance(exc_info.value.__cause__, httpx.RequestError)
 
     @pytest.mark.asyncio
     async def test_cloud_fallback_with_custom_embedding(self, unloaded_client):
